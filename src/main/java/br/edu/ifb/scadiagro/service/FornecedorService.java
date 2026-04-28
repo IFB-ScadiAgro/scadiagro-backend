@@ -51,9 +51,10 @@ public class FornecedorService {
     }
 
     public void deletar(Long id) {
-        if (!repository.deleteById(id)) {
+        if (!repository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fornecedor não encontrado: " + id);
         }
+        repository.deleteById(id);
     }
 
     private FornecedorDTO toDTO(Fornecedor f) {

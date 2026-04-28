@@ -1,13 +1,31 @@
 package br.edu.ifb.scadiagro.model;
 
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "fornecedor")
 public class Fornecedor {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @Column(nullable = false)
     private String razaoSocial;
+    
+    @Column(nullable = false)
     private String nomeFantasia;
+    
+    @Column(nullable = false, unique = true)
     private String cnpj;
+    
     private String email;
     private String telefone;
     private String tokenVinculo;
+    
+    @OneToMany(mappedBy = "fornecedor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CotacaoResposta> cotacoes = new ArrayList<>();
 
     public Fornecedor() {}
 
@@ -44,6 +62,9 @@ public class Fornecedor {
 
     public String getTokenVinculo() { return tokenVinculo; }
     public void setTokenVinculo(String tokenVinculo) { this.tokenVinculo = tokenVinculo; }
+
+    public List<CotacaoResposta> getCotacoes() { return cotacoes; }
+    public void setCotacoes(List<CotacaoResposta> cotacoes) { this.cotacoes = cotacoes; }
 
     @Override
     public String toString() {

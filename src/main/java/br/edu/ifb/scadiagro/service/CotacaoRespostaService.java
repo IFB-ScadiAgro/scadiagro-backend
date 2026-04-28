@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,7 +18,6 @@ public class CotacaoRespostaService {
     private final CotacaoRespostaRepository cotacaoRepository;
     private final FornecedorRepository fornecedorRepository;
     private final SolicitacaoCompraRepository solicitacaoRepository;
-    private final AtomicLong itemSequence = new AtomicLong(1);
 
     public CotacaoRespostaService(CotacaoRespostaRepository cotacaoRepository,
                                   FornecedorRepository fornecedorRepository,
@@ -55,23 +53,23 @@ public class CotacaoRespostaService {
         cotacao.setObsFornecedor(dto.getObsFornecedor());
 
         if (dto.getItensResposta() != null) {
-            for (CotacaoRespostaDTO.CotacaoRespostaItemDTO itemDTO : dto.getItensResposta()) {
-                ItemSolicitacao itemSolicitacao = solicitacao.getItens().stream()
-                        .filter(i -> i.getId().equals(itemDTO.getItemSolicitacaoId()))
-                        .findFirst()
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "Item não encontrado na solicitação: " + itemDTO.getItemSolicitacaoId()));
+             for (CotacaoRespostaDTO.CotacaoRespostaItemDTO itemDTO : dto.getItensResposta()) {
+                 ItemSolicitacao itemSolicitacao = solicitacao.getItens().stream()
+                         .filter(i -> i.getId().equals(itemDTO.getItemSolicitacaoId()))
+                         .findFirst()
+                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                 "Item não encontrado na solicitação: " + itemDTO.getItemSolicitacaoId()));
 
-                CotacaoRespostaItem cri = new CotacaoRespostaItem(
-                        itemSequence.getAndIncrement(),
-                        itemDTO.getValorUnitario(),
-                        itemDTO.getPercentualDesconto(),
-                        itemDTO.getDataValidade(),
-                        itemDTO.isSemEstoque(),
-                        itemSolicitacao);
-                cotacao.adicionarItemResposta(cri);
-            }
-        }
+                 CotacaoRespostaItem cri = new CotacaoRespostaItem(
+                         null,
+                         itemDTO.getValorUnitario(),
+                         itemDTO.getPercentualDesconto(),
+                         itemDTO.getDataValidade(),
+                         itemDTO.isSemEstoque(),
+                         itemSolicitacao);
+                 cotacao.adicionarItemResposta(cri);
+             }
+         }
 
         cotacaoRepository.save(cotacao);
         solicitacao.adicionarCotacao(cotacao);
@@ -88,9 +86,10 @@ public class CotacaoRespostaService {
     }
 
     public void deletar(Long id) {
-        if (!cotacaoRepository.deleteById(id)) {
+        if (!cotacaoRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cotação não encontrada: " + id);
         }
+        cotacaoRepository.deleteById(id);
     }
 
     private CotacaoRespostaDTO toDTO(CotacaoResposta c) {

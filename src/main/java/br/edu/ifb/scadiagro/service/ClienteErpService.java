@@ -48,9 +48,10 @@ public class ClienteErpService {
     }
 
     public void deletar(Long id) {
-        if (!repository.deleteById(id)) {
+        if (!repository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado: " + id);
         }
+        repository.deleteById(id);
     }
 
     private ClienteErpDTO toDTO(ClienteErp c) {

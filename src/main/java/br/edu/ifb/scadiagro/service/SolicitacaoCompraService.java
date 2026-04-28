@@ -11,14 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
 public class SolicitacaoCompraService {
 
     private final SolicitacaoCompraRepository repository;
-    private final AtomicLong itemSequence = new AtomicLong(1);
 
     public SolicitacaoCompraService(SolicitacaoCompraRepository repository) {
         this.repository = repository;
@@ -68,9 +66,10 @@ public class SolicitacaoCompraService {
     }
 
     public void deletar(Long id) {
-        if (!repository.deleteById(id)) {
+        if (!repository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitação não encontrada: " + id);
         }
+        repository.deleteById(id);
     }
 
     public SolicitacaoCompraDTO adicionarItem(Long solicitacaoId, ItemSolicitacaoDTO itemDTO) {
@@ -78,7 +77,7 @@ public class SolicitacaoCompraService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Solicitação não encontrada: " + solicitacaoId));
         ItemSolicitacao item = new ItemSolicitacao(
-                itemSequence.getAndIncrement(),
+                null,
                 itemDTO.getCodScadiagro(),
                 itemDTO.getQuantidade(),
                 itemDTO.getNomeProduto());

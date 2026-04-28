@@ -1,13 +1,27 @@
 package br.edu.ifb.scadiagro.model;
 
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+@Entity
+@Table(name = "item_solicitacao")
 public class ItemSolicitacao {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @Column(nullable = false)
     private int codScadiagro;
+    
+    @Column(precision = 19, scale = 2)
     private BigDecimal quantidade = BigDecimal.ZERO;
+    
     private String nomeProduto;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "solicitacao_id")
+    private SolicitacaoCompra solicitacao;
 
     public ItemSolicitacao() {}
 
@@ -33,6 +47,9 @@ public class ItemSolicitacao {
 
     public String getNomeProduto() { return nomeProduto; }
     public void setNomeProduto(String nomeProduto) { this.nomeProduto = nomeProduto; }
+
+    public SolicitacaoCompra getSolicitacao() { return solicitacao; }
+    public void setSolicitacao(SolicitacaoCompra solicitacao) { this.solicitacao = solicitacao; }
 
     @Override
     public String toString() {

@@ -1,18 +1,33 @@
 package br.edu.ifb.scadiagro.model;
 
+import jakarta.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "cotacao_resposta")
 public class CotacaoResposta {
 
     private static final Logger log = LoggerFactory.getLogger(CotacaoResposta.class);
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     private String obsFornecedor;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fornecedor_id", nullable = false)
     private Fornecedor fornecedor;
+    
+    @OneToMany(mappedBy = "cotacao", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CotacaoRespostaItem> itensResposta = new ArrayList<>();
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "solicitacao_id", nullable = false)
     private SolicitacaoCompra solicitacao;
 
     public CotacaoResposta() {}

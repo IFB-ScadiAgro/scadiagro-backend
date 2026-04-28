@@ -1,15 +1,32 @@
 package br.edu.ifb.scadiagro.model;
 
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "cotacao_resposta_item")
 public class CotacaoRespostaItem {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @Column(precision = 19, scale = 2)
     private BigDecimal valorUnitario = BigDecimal.ZERO;
+    
+    @Column(precision = 5, scale = 2)
     private BigDecimal percentualDesconto = BigDecimal.ZERO;
+    
     private LocalDate dataValidade;
     private boolean semEstoque = false;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_solicitacao_id")
     private ItemSolicitacao itemSolicitacao;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cotacao_id", nullable = false)
+    private CotacaoResposta cotacao;
 
     public CotacaoRespostaItem() {}
 
@@ -47,6 +64,9 @@ public class CotacaoRespostaItem {
 
     public ItemSolicitacao getItemSolicitacao() { return itemSolicitacao; }
     public void setItemSolicitacao(ItemSolicitacao itemSolicitacao) { this.itemSolicitacao = itemSolicitacao; }
+
+    public CotacaoResposta getCotacao() { return cotacao; }
+    public void setCotacao(CotacaoResposta cotacao) { this.cotacao = cotacao; }
 
     @Override
     public String toString() {

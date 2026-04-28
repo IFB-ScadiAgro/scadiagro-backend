@@ -1,13 +1,26 @@
 package br.edu.ifb.scadiagro.model;
 
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "cliente_erp")
 public class ClienteErp {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @Column(nullable = false)
     private String codigoErp;
+    
+    @Column(nullable = false)
     private String nomeRazao;
+    
+    @Column(nullable = false)
     private String cpfCnpj;
+    
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SolicitacaoCompra> solicitacoes = new ArrayList<>();
 
     public ClienteErp() {}

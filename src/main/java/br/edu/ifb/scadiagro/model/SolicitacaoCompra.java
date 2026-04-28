@@ -1,19 +1,40 @@
 package br.edu.ifb.scadiagro.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "solicitacao_compra")
 public class SolicitacaoCompra {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @Column(nullable = false)
     private String codigoPedidoErp;
+    
     private String observacao;
     private String proprietario;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private StatusSolicitacao status = StatusSolicitacao.RASCUNHO;
+    
+    @Column(nullable = false)
     private LocalDateTime dataCriacao = LocalDateTime.now();
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente_id")
+    private ClienteErp cliente;
+    
+    @OneToMany(mappedBy = "solicitacao", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemSolicitacao> itens = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "solicitacao", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CotacaoResposta> cotacoes = new ArrayList<>();
 
     public SolicitacaoCompra() {}
@@ -73,6 +94,9 @@ public class SolicitacaoCompra {
 
     public LocalDateTime getDataCriacao() { return dataCriacao; }
     public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
+
+    public ClienteErp getCliente() { return cliente; }
+    public void setCliente(ClienteErp cliente) { this.cliente = cliente; }
 
     public List<ItemSolicitacao> getItens() { return itens; }
     public void setItens(List<ItemSolicitacao> itens) { this.itens = itens; }
